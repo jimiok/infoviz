@@ -11,6 +11,7 @@ df = pd.read_pickle('excel_pickle.pkl')
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
 st.title("Sustainable Development Goal (SDG) 6: Clean Water and Sanitation")
+st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation. The data is sourced from the United Nations and the World Bank. Use the sidebar to select the year and the area (urban, rural, or all areas). Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
 
 st.sidebar.title("Data selection")
 number = st.sidebar.slider('Select a year', min_value=2000, max_value=2022, value=2010)
@@ -32,7 +33,8 @@ fig = px.choropleth(df,
                     hover_name='GeoAreaName',  # Column to display as hover text
                     range_color=[0, 100], 
                     color_continuous_scale='RdYlGn',  # Color scale ranging from red to green
-                    title='Data by Country')
+                    #title='Data by Country'
+                    )
 
 fig.update_geos(
         showcoastlines=True, 
@@ -160,7 +162,9 @@ fig_4.update_layout(
 )
 
 #st.plotly_chart(fig_2, use_container_width=True)
+#st.header("Proportion of population using safely managed drinking-water services")
 st.plotly_chart(fig, use_container_width=True)
+st.text("Access to safely managed drinking-water services is a critical indicator of public health and socio-economic development. It reflects a country's ability to provide clean, reliable, and sustainable water resources, which are essential for preventing waterborne diseases and promoting overall well-being. Regions with lower proportions often face higher health risks, economic challenges, and social inequalities, highlighting areas where targeted interventions and investments are urgently needed.")
 st.plotly_chart(fig_4, use_container_width=True)
 st.plotly_chart(fig_2, use_container_width=True)
 st.plotly_chart(fig_3, use_container_width=True)
