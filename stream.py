@@ -6,9 +6,9 @@ import plotly.express as px
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
 st.title("Sustainable Development Goal (SDG) 6: Clean Water and Sanitation")
-st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation."
-        "The data is sourced from the United Nations and the World Bank."
-        "Use the sidebar to select the year and the area (urban, rural, or all areas)." 
+st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation. "
+        "The data is sourced from the United Nations and the World Bank. "
+        "Use the sidebar to select the year and the area (urban, rural, or all areas). " 
         "Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
 
 st.sidebar.title("Data selection")
@@ -23,7 +23,7 @@ option = st.sidebar.selectbox(
 )
 
 # First map
-df = pd.read_pickle('excel_pickle.pkl')
+df = pd.read_pickle('data/excel_pickle.pkl')
 df = df[(df["Location"] == option) & (df["TimePeriod"] == number)]
 
 fig = px.choropleth(df, 
@@ -55,7 +55,7 @@ fig.update_layout(
 
 
 # Second map
-df_mortality = pd.read_pickle('mortality_data.pkl')
+df_mortality = pd.read_pickle('data/mortality_data.pkl')
 
 df_mortality = df_mortality[(df_mortality["DIM_TIME"] == 2019) & (df_mortality["DIM_SEX"] == "TOTAL")]
 df_mortality["log_value"] = np.log10(df_mortality["RATE_PER_100000_N"])
@@ -95,7 +95,7 @@ fig_2.update_coloraxes(
 
 
 # Third map
-df_expectancy = pd.read_pickle('life_expectancy.pkl')
+df_expectancy = pd.read_pickle('data/life_expectancy.pkl')
 df_expectancy['Year'] = df_expectancy['Year'].astype(int)
 df_expectancy['Value'] = df_expectancy['Value'].replace('..', pd.NA)
 df_expectancy['Value'] = pd.to_numeric(df_expectancy['Value'], errors='coerce')
@@ -134,7 +134,7 @@ if df_expectancy.empty:
 
 
 # Fourth map
-df_wb_water = pd.read_pickle('wb_water_access.pkl')
+df_wb_water = pd.read_pickle('data/wb_water_access.pkl')
 df_wb_water['Year'] = df_wb_water['Year'].astype(int)
 df_wb_water['Value'] = df_wb_water['Value'].replace('..', pd.NA)
 df_wb_water['Value'] = pd.to_numeric(df_wb_water['Value'], errors='coerce')
