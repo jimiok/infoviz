@@ -6,7 +6,7 @@ import plotly.express as px
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
 st.title("Sustainable Development Goal (SDG) 6: Clean Water and Sanitation")
-st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation. "
+st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation, focusing on most vulnerable areas, such as Africa and South Asia. "
         "The data is sourced from the United Nations and the World Bank. "
         "Use the sidebar to select the year and the area (urban, rural, or all areas). " 
         "Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
@@ -31,14 +31,16 @@ fig = px.choropleth(df,
                     locationmode='country names',
                     color='Value',
                     hover_name='GeoAreaName',
+                    hover_data={'Value': ':.2f', "GeoAreaName": False},
+                    labels={'Value': 'Access to Clean Drinking Water (%)'},
                     range_color=[0, 100],
                     color_continuous_scale='RdYlGn',
                     )
 
 fig.update_geos(
-        showcoastlines=True, 
-        coastlinecolor="Black", 
-        showland=True, 
+        showcoastlines=True,
+        coastlinecolor="Black",
+        showland=True,
         landcolor="lightgray",
         center=dict(lat=2, lon=53),
         projection_scale=2.3
@@ -66,7 +68,8 @@ fig_2 = px.choropleth(df_mortality,
                     locationmode='country names',
                     color='log_value',
                     hover_name='GEO_NAME_SHORT',
-                    hover_data='RATE_PER_100000_N', 
+                    hover_data={'RATE_PER_100000_N': ':.2f', "log_value": False, "GEO_NAME_SHORT": False},
+                    labels={'RATE_PER_100000_N': 'Mortality rate per 100 000'},
                     color_continuous_scale='RdYlGn_r',
                     title='Data by Country')
 
@@ -107,6 +110,8 @@ fig_3 = px.choropleth(df_expectancy,
                     locationmode='country names',
                     color='Value',
                     hover_name='Country Name',
+                    hover_data={'Value': ':.2f', "Country Name": False},
+                    labels={'Value': 'Life expectancy (years)'},
                     color_continuous_scale='RdYlGn',
                     range_color=[40, 85],
                     title='Data by Country')
@@ -146,6 +151,8 @@ fig_4 = px.choropleth(df_wb_water,
                     locationmode='country names',
                     color='Value',
                     hover_name='Country Name',
+                    hover_data={'Value': ':.2f', "Country Name": False},
+                    labels={'Value': 'Proportion of access (%)'},
                     range_color=[0, 100],
                     color_continuous_scale='RdYlGn',
                     title='Data by Country')
