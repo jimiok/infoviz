@@ -3,37 +3,36 @@ import numpy as np
 import streamlit as st
 import plotly.express as px
 
-# Load your DataFrame from a pickle file
-df = pd.read_pickle('excel_pickle.pkl')
-
-# Ensure the DataFrame has a 'country' column and a 'value' column to visualize
-# For this example, we'll assume you have 'Country' and 'Value' columns in your DataFrame
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
 st.title("Sustainable Development Goal (SDG) 6: Clean Water and Sanitation")
-st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation. The data is sourced from the United Nations and the World Bank. Use the sidebar to select the year and the area (urban, rural, or all areas). Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
+st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation."
+        "The data is sourced from the United Nations and the World Bank."
+        "Use the sidebar to select the year and the area (urban, rural, or all areas)." 
+        "Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
 
 st.sidebar.title("Data selection")
 number = st.sidebar.slider('Select a year', min_value=2000, max_value=2022, value=2010)
 
+
+# sidebar
 option = st.sidebar.selectbox(
     "Choose an area:",
     options=["URBAN", "RURAL", "ALLAREA"],
     format_func=lambda x: {"URBAN": "Urban Areas", "RURAL": "Rural Areas", "ALLAREA": "All Areas"}[x]
 )
 
-
+# First map
+df = pd.read_pickle('excel_pickle.pkl')
 df = df[(df["Location"] == option) & (df["TimePeriod"] == number)]
 
-# Create a choropleth map using Plotly
 fig = px.choropleth(df, 
-                    locations='GeoAreaName',  # This should be the country name or ISO code
-                    locationmode='country names',  # or 'ISO-3' if using 3-letter country codes
-                    color='Value',  # The data column you want to visualize
-                    hover_name='GeoAreaName',  # Column to display as hover text
-                    range_color=[0, 100], 
-                    color_continuous_scale='RdYlGn',  # Color scale ranging from red to green
-                    #title='Data by Country'
+                    locations='GeoAreaName',
+                    locationmode='country names',
+                    color='Value',
+                    hover_name='GeoAreaName',
+                    range_color=[0, 100],
+                    color_continuous_scale='RdYlGn',
                     )
 
 fig.update_geos(
@@ -41,56 +40,61 @@ fig.update_geos(
         coastlinecolor="Black", 
         showland=True, 
         landcolor="lightgray",
-        center=dict(lat=2, lon=53),  # Set the center of the map (latitude, longitude)
-        projection_scale=2.3  # Adjust the zoom level (lower values zoom in more)
+        center=dict(lat=2, lon=53),
+        projection_scale=2.3
     )
-fig.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+
 fig.update_layout(
+    margin={"r":0,"t":30,"l":0,"b":0}, 
     title='Proportion of population using safely managed drinking-water services',
     coloraxis_colorbar=dict(
-        title="Access to Clean Drinking Water (%)"  # Custom label
-    )
+        title="Access to Clean Drinking Water (%)"
+    ),
+    coloraxis_colorbar_title_side="right",
 )
 
-#st.plotly_chart(fig, use_container_width=True)
 
+# Second map
 df_mortality = pd.read_pickle('mortality_data.pkl')
 
 df_mortality = df_mortality[(df_mortality["DIM_TIME"] == 2019) & (df_mortality["DIM_SEX"] == "TOTAL")]
 df_mortality["log_value"] = np.log10(df_mortality["RATE_PER_100000_N"])
 
-# Create a choropleth map using Plotly
+
 fig_2 = px.choropleth(df_mortality, 
-                    locations='GEO_NAME_SHORT',  # This should be the country name or ISO code
-                    locationmode='country names',  # or 'ISO-3' if using 3-letter country codes
-                    color='log_value',  # The data column you want to visualize
-                    hover_name='GEO_NAME_SHORT',  # Column to display as hover text
+                    locations='GEO_NAME_SHORT',
+                    locationmode='country names',
+                    color='log_value',
+                    hover_name='GEO_NAME_SHORT',
                     hover_data='RATE_PER_100000_N', 
-                    color_continuous_scale='RdYlGn_r',  # Color scale (reversed)
+                    color_continuous_scale='RdYlGn_r',
                     title='Data by Country')
 
 fig_2.update_geos(
-        showcoastlines=True, 
-        coastlinecolor="Black", 
-        showland=True, 
+        showcoastlines=True,
+        coastlinecolor="Black",
+        showland=True,
         landcolor="lightgray",
-        center=dict(lat=2, lon=53),  # Set the center of the map (latitude, longitude)
-        projection_scale=2.3  # Adjust the zoom level (lower values zoom in more)
+        center=dict(lat=2, lon=53),
+        projection_scale=2.3
     )
-fig_2.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
 
 fig_2.update_layout(
+    margin={"r":0,"t":30,"l":0,"b":0}, 
     title='Mortality rate attributed to exposure to unsafe WASH services, 2019',
     coloraxis_colorbar=dict(
-        title="Mortality rate per 100 000"  # Custom label
-    )
+        title="Mortality rate per 100 000"
+    ),
+    coloraxis_colorbar_title_side="right",
 )
 
 fig_2.update_coloraxes(
-    colorbar_tickvals=np.log10([1, 10, 100, 1000, 10000]),  # Tick locations
-    colorbar_ticktext=["1", "10", "100", "1k", "10k"],       # Original values
+    colorbar_tickvals=np.log10([1, 10, 100, 1000, 10000]),
+    colorbar_ticktext=["1", "10", "100", "1k", "10k"],
 )
 
+
+# Third map
 df_expectancy = pd.read_pickle('life_expectancy.pkl')
 df_expectancy['Year'] = df_expectancy['Year'].astype(int)
 df_expectancy['Value'] = df_expectancy['Value'].replace('..', pd.NA)
@@ -98,36 +102,38 @@ df_expectancy['Value'] = pd.to_numeric(df_expectancy['Value'], errors='coerce')
 
 df_expectancy = df_expectancy[(df_expectancy["Year"] == number)]
 
-
 fig_3 = px.choropleth(df_expectancy, 
-                    locations='Country Name',  # This should be the country name or ISO code
-                    locationmode='country names',  # or 'ISO-3' if using 3-letter country codes
-                    color='Value',  # The data column you want to visualize
-                    hover_name='Country Name',  # Column to display as hover text
-                    color_continuous_scale='RdYlGn',  # Color scale
-                    range_color=[40, 85],  # Range of the color scale
+                    locations='Country Name',
+                    locationmode='country names',
+                    color='Value',
+                    hover_name='Country Name',
+                    color_continuous_scale='RdYlGn',
+                    range_color=[40, 85],
                     title='Data by Country')
 
 fig_3.update_geos(
-        showcoastlines=True, 
-        coastlinecolor="Black", 
-        showland=True, 
+        showcoastlines=True,
+        coastlinecolor="Black",
+        showland=True,
         landcolor="lightgray",
-        center=dict(lat=2, lon=53),  # Set the center of the map (latitude, longitude)
-        projection_scale=2.3  # Adjust the zoom level (lower values zoom in more)
+        center=dict(lat=2, lon=53),
+        projection_scale=2.3
     )
-fig_3.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
 
 fig_3.update_layout(
+    margin={"r":0,"t":30,"l":0,"b":0}, 
     title='Life expectancy',
     coloraxis_colorbar=dict(
-        title="Life expectancy"  # Custom label
-    )
+        title="Life expectancy (years)"
+    ),
+    coloraxis_colorbar_title_side="right",
 )
 
 if df_expectancy.empty:
     st.write("No data available for the selected year.")
 
+
+# Fourth map
 df_wb_water = pd.read_pickle('wb_water_access.pkl')
 df_wb_water['Year'] = df_wb_water['Year'].astype(int)
 df_wb_water['Value'] = df_wb_water['Value'].replace('..', pd.NA)
@@ -135,39 +141,54 @@ df_wb_water['Value'] = pd.to_numeric(df_wb_water['Value'], errors='coerce')
 
 df_wb_water = df_wb_water[(df_wb_water["Area"] == option) & (df_wb_water["Year"] == number)]
 
-# Create a choropleth map using Plotly
 fig_4 = px.choropleth(df_wb_water, 
-                    locations='Country Name',  # This should be the country name or ISO code
-                    locationmode='country names',  # or 'ISO-3' if using 3-letter country codes
-                    color='Value',  # The data column you want to visualize
-                    hover_name='Country Name',  # Column to display as hover text
-                    range_color=[0, 100], 
-                    color_continuous_scale='RdYlGn',  # Color scale ranging from red to green
+                    locations='Country Name',
+                    locationmode='country names',
+                    color='Value',
+                    hover_name='Country Name',
+                    range_color=[0, 100],
+                    color_continuous_scale='RdYlGn',
                     title='Data by Country')
 
 fig_4.update_geos(
-        showcoastlines=True, 
-        coastlinecolor="Black", 
-        showland=True, 
+        showcoastlines=True,
+        coastlinecolor="Black",
+        showland=True,
         landcolor="lightgray",
-        center=dict(lat=2, lon=53),  # Set the center of the map (latitude, longitude)
-        projection_scale=2.3  # Adjust the zoom level (lower values zoom in more)
+        center=dict(lat=2, lon=53),
+        projection_scale=2.3
     )
-fig_4.update_layout(margin={"r":0,"t":30,"l":0,"b":0})
+
 fig_4.update_layout(
+    margin={"r":0,"t":30,"l":0,"b":0}, 
     title='People using at least basic drinking water services',
     coloraxis_colorbar=dict(
-        title="Proportion of access (%)"  # Custom label
-    )
+        title="Proportion of access (%)"
+    ),
+    coloraxis_colorbar_title_side="right",
 )
 
-#st.plotly_chart(fig_2, use_container_width=True)
-#st.header("Proportion of population using safely managed drinking-water services")
+
+# Maps and text
 st.plotly_chart(fig, use_container_width=True)
-st.text("Access to safely managed drinking-water services is a critical indicator of public health and socio-economic development. It reflects a country's ability to provide clean, reliable, and sustainable water resources, which are essential for preventing waterborne diseases and promoting overall well-being. Regions with lower proportions often face higher health risks, economic challenges, and social inequalities, highlighting areas where targeted interventions and investments are urgently needed.")
+st.text("Access to safely managed drinking-water services is a critical indicator of public health and socio-economic development. "
+    "It reflects a country's ability to provide clean, reliable, and sustainable water resources, which are essential for preventing "
+    "waterborne diseases and promoting overall well-being. Regions with lower proportions often face higher health risks, economic challenges, "
+    "and social inequalities, highlighting areas where targeted interventions and investments are urgently needed.")
+
 st.plotly_chart(fig_4, use_container_width=True)
-st.text("Access to basic drinking water services is fundamental to human health and dignity. It serves as a baseline indicator of a community's capacity to meet essential water needs for drinking, cooking, and hygiene. This map reveals disparities in access, highlighting regions where populations are vulnerable to waterborne diseases and health crises. Identifying these gaps is crucial for targeting resources and initiatives to improve global water security and public health.")
+st.text("Access to basic drinking water services is fundamental to human health and dignity. It serves as a baseline indicator of a community's capacity "
+    "to meet essential water needs for drinking, cooking, and hygiene. This map reveals disparities in access, highlighting regions where populations "
+    "are vulnerable to waterborne diseases and health crises. Identifying these gaps is crucial for targeting resources and initiatives to improve global "
+    "water security and public health.")
+
 st.plotly_chart(fig_2, use_container_width=True)
-st.text("This metric highlights the human cost of inadequate water, sanitation, and hygiene (WASH) services. High mortality rates due to unsafe WASH reflect systemic challenges in access to basic infrastructure and public health services. These deaths are largely preventable, making this data a critical call to action for investments in clean water, sanitation, and hygiene. Understanding the regional disparities shown on the map helps prioritize efforts to reduce preventable deaths and promote global health equity.")
+st.text("This metric highlights the human cost of inadequate water, sanitation, and hygiene (WASH) services. High mortality rates due to unsafe WASH reflect "
+    "systemic challenges in access to basic infrastructure and public health services. These deaths are largely preventable, making this data a critical call "
+    "to action for investments in clean water, sanitation, and hygiene. Understanding the regional disparities shown on the map helps prioritize efforts to reduce "
+    "preventable deaths and promote global health equity.")
+
 st.plotly_chart(fig_3, use_container_width=True)
-st.text("Life expectancy is a key indicator of a population's overall health, quality of life, and access to essential services. It reflects the cumulative impact of factors such as healthcare quality, living conditions, education, and economic stability. Regional disparities in life expectancy highlight areas where improvements in healthcare systems and social determinants of health are needed, making this visualization a powerful tool for identifying and addressing global health inequalities.")
+st.text("Life expectancy is a key indicator of a population's overall health, quality of life, and access to essential services. It reflects the cumulative impact of factors "
+    "such as healthcare quality, living conditions, education, and economic stability. Regional disparities in life expectancy highlight areas where improvements in healthcare "
+    "systems and social determinants of health are needed, making this visualization a powerful tool for identifying and addressing global health inequalities.")
