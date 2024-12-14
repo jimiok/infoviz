@@ -15,6 +15,9 @@ st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanita
         "Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
 
 
+st.page_link("https://sdgs.un.org/goals/goal6", label="See more information on SDG6 on the UN website.", icon="🌎")
+
+
 if 'slider_value' not in st.session_state:
     st.session_state.slider_value = 2010
 if 'auto_change' not in st.session_state:
