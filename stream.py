@@ -8,6 +8,7 @@ from streamlit_autorefresh import st_autorefresh
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
 st.title("Sustainable Development Goal (SDG) 6: Clean Water and Sanitation")
+st.caption("Made for CS-E4450 - Explorative Information Visualization D, Aalto University, 2024 by Jimi Oksman")
 st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanitation, focusing on most vulnerable areas, such as Africa and South Asia. "
         "The data is sourced from the United Nations and the World Bank. "
         "Use the sidebar to select the year and the area (urban, rural, or all areas). " 
@@ -219,4 +220,4 @@ st.text("This metric highlights the human cost of inadequate water, sanitation, 
 st.plotly_chart(fig_3, use_container_width=True)
 st.text("Life expectancy is a key indicator of a population's overall health, quality of life, and access to essential services. It reflects the cumulative impact of factors "
     "such as healthcare quality, living conditions, education, and economic stability. Regional disparities in life expectancy highlight areas where improvements in healthcare "
-    "systems and social determinants of health are needed, making this visualization a powerful tool for identifying and addressing global health inequalities.")
+    "systems and social determinants of health are needed.")
