@@ -1,3 +1,7 @@
+## Direct access
+
+The visualization can be directly accessed at https://jimiok-infoviz-stream-n7nmbc.streamlit.app/
+
 ## Installation Instructions
 
 1. Install the required packages:
