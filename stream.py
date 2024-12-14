@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import plotly.express as px
+from streamlit_autorefresh import st_autorefresh
+
 
 
 st.set_page_config(layout="wide", page_icon=":potable_water:")
@@ -11,11 +13,30 @@ st.text("This dashboard visualizes data related to SDG 6: Clean Water and Sanita
         "Use the sidebar to select the year and the area (urban, rural, or all areas). " 
         "Due to the lack of data for some years and countries, some parts of the dashboard may be empty.")
 
-st.sidebar.title("Data selection")
-number = st.sidebar.slider('Select a year', min_value=2000, max_value=2022, value=2010)
 
+if 'slider_value' not in st.session_state:
+    st.session_state.slider_value = 2010
+if 'auto_change' not in st.session_state:
+    st.session_state.auto_change = False
 
 # sidebar
+st.sidebar.title("Data selection")
+
+st.session_state.auto_change = st.sidebar.checkbox('Automatically change year', value=st.session_state.auto_change)
+
+# Auto-refresh
+if st.session_state.auto_change:
+    count = st_autorefresh(interval=1000, limit=100, key="fizzbuzzcounter")
+    if count % 1 == 0:
+        st.session_state.slider_value += 1
+        if st.session_state.slider_value > 2022:
+            st.session_state.slider_value = 2000
+
+
+number = st.sidebar.slider('Select a year', min_value=2000, max_value=2022, value=st.session_state.slider_value)
+
+st.session_state.slider_value = number
+
 option = st.sidebar.selectbox(
     "Choose an area:",
     options=["URBAN", "RURAL", "ALLAREA"],
