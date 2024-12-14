@@ -175,7 +175,7 @@ fig_4 = px.choropleth(df_wb_water,
                     hover_name='Country Name',
                     hover_data={'Value': ':.2f', "Country Name": False},
                     labels={'Value': 'Proportion of access (%)'},
-                    range_color=[0, 100],
+                    range_color=[40, 100],
                     color_continuous_scale='RdYlGn',
                     title='Data by Country')
 
